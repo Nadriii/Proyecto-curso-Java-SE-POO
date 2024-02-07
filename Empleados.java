@@ -1,5 +1,4 @@
 
-package com.mycompany.practicasplatzi;
 import java.util.ArrayList;
 import java.util.List;
 /**
