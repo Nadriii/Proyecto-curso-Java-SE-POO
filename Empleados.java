@@ -1,10 +1,19 @@
-
 import java.util.ArrayList;
 import java.util.List;
 /**
  *
- * @author adrib
+ * @author Adriana Noeli Benitez Arguello
  */
+
+/*
+    Programa sencillo de gestion de empleados, se crea un objeto EmpleadoInterfaz con sus caracteristicas y
+    se agrega al gestor: se puede eliminar, agregar o buscar por ID.
+    Implementacion de:
+        -Interfaz
+        -Objetos
+        -Herencia  
+        -Encapsulamiento: uso de private, final y static donde crei necesario
+*/
 public class Empleados {
     public String nombre;
     public static int id=0;
@@ -15,13 +24,15 @@ public class Empleados {
         id++;
         this.idEmpleado = id;
     }
+
     
-    interface Empleado {
+    interface EmpleadoInterfaz {
         int calcularSalario();
         String obtenerDetalles();
+        int obtenerId();
     }
     
-    public static class EmpleadoPorHora extends Empleados implements Empleado{
+    public static class EmpleadoPorHora extends Empleados implements EmpleadoInterfaz{
         public int horas;
         public int sueldoPorHora;
        // public String nombre;
@@ -38,13 +49,19 @@ public class Empleados {
         }
         
         @Override
+        public int obtenerId(){
+            return idEmpleado;
+        }
+        
+        @Override
         public String obtenerDetalles(){
-            return "\n ID: " + idEmpleado + "\n Nombre: " + nombre + "\n Tipo de empleado: Por hora" +
+            return "\n ID: " + obtenerId() + "\n Nombre: " + nombre + "\n Tipo de empleado: Por hora" +
+                    "\n Total horas trabajadas: " + horas + "\n Paga por hora: " + sueldoPorHora +
                     "\n Sueldo a cobrar: " + calcularSalario();
         }  
     }
     
-    public static class EmpleadoTiempoCompleto extends Empleados implements Empleado{
+    public static class EmpleadoTiempoCompleto extends Empleados implements EmpleadoInterfaz{
         public int sueldoMensual;
         
         public EmpleadoTiempoCompleto(String nombre, int sueldoMensual){
@@ -56,16 +73,21 @@ public class Empleados {
         public int calcularSalario() {
             return sueldoMensual;
         }
-
+        
+        @Override 
+         public int obtenerId(){
+            return idEmpleado;
+        }
+        
         @Override
         public String obtenerDetalles() {
-           return "\n ID: " + idEmpleado + "\n Nombre: " + nombre + "\n Tipo de empleado: Tiempo completo " +
+           return "\n ID: " + obtenerId() + "\n Nombre: " + nombre + "\n Tipo de empleado: Tiempo completo " +
                     "\n Sueldo a cobrar: " + calcularSalario();
         }
         
     }
     
-    public static class EmpleadoPorComision  extends Empleados implements Empleado{
+    public static class EmpleadoPorComision  extends Empleados implements EmpleadoInterfaz{
         public int  comisionPorVenta;
         public int cantVentas;
         
@@ -79,53 +101,86 @@ public class Empleados {
         public int calcularSalario() {
             return cantVentas * comisionPorVenta;
         }
-
+        
+        
+        @Override 
+         public int obtenerId(){
+            return idEmpleado;
+        }
+       
         @Override
         public String obtenerDetalles() {
-            return "\n ID: " + idEmpleado + "\n Nombre: " + nombre + "\n Tipo de empleado: Tiempo completo " +
+            return "\n ID: " + obtenerId() + "\n Nombre: " + nombre + "\n Tipo de empleado: Por comision " +
+                    "\n Cantidad de ventas concretadas: " +  cantVentas + "\n Comision por venta: " +comisionPorVenta+
                     "\n Sueldo a cobrar: " + calcularSalario();
         }
         
     }
     
     public static class GestorEmpleados{
-       private List<Empleado> listaEmpleado; 
+       private final List<EmpleadoInterfaz> listaEmpleado; 
        
        public GestorEmpleados(){
            this.listaEmpleado = new ArrayList<>();
        }
        
-       public void agregar(Empleado empleado){
+       //Agrega un nuevo empleado al gestor
+       public void agregar(EmpleadoInterfaz empleado){
            listaEmpleado.add(empleado);
        }
        
-       public void eliminar(Empleado empleado){
+       //Elimina un empleado especifico
+       public void eliminar(EmpleadoInterfaz empleado){
            listaEmpleado.remove(empleado);
+           System.out.println("\n----------------------------");
+           System.out.println("Se elimino al empleado: " + empleado.obtenerDetalles());
+           System.out.println("\n----------------------------");
        }
-       
+        
+        //Imprime todos los empleados existentes
        public void mostrar(){
-           for (Empleado empleado : listaEmpleado){
+           for (EmpleadoInterfaz empleado : listaEmpleado){
                System.out.println(empleado.obtenerDetalles());
+           }
+       }
+       //Buscar un ID en especifico, devuelve la informacion del empleado
+       public void buscarID(int idBuscado){
+           for (EmpleadoInterfaz empleado : listaEmpleado){
+               if ( empleado.obtenerId() == idBuscado ){
+                   System.out.println("\nEl empleado con el ID buscado:" + empleado.obtenerDetalles());
+               }    
            }
        }
        
     }
     
     public static void main(String[] args) {
+        //Creacion del gestor
         GestorEmpleados gestor = new GestorEmpleados();
         
-        Empleado  emp1 = new EmpleadoPorHora("Juan", 10, 10500);
+        //Creacion y asignacion de los empleados
+        EmpleadoInterfaz  emp1 = new EmpleadoPorHora("Juan", 10, 10500);
+        //Agregar el empleado al gestor
         gestor.agregar(emp1);
         
-        Empleado  emp2 = new EmpleadoTiempoCompleto("Beatriz", 1500000);
+        EmpleadoInterfaz  emp2 = new EmpleadoTiempoCompleto("Beatriz", 1500000);
         gestor.agregar(emp2);
         
-        Empleado  emp3 = new EmpleadoPorComision("Emanuel", 105000, 12);
+        EmpleadoInterfaz  emp3 = new EmpleadoPorComision("Emanuel", 105000, 12);
         gestor.agregar(emp3);
         
-        Empleado  emp4 = new EmpleadoPorHora("Jose Luis", 60, 12500);
+        EmpleadoInterfaz  emp4 = new EmpleadoPorHora("Jose Luis", 60, 12500);
         gestor.agregar(emp4);
         
+        //Imprimir en consola todos los empleados
+        gestor.mostrar();
+        
+        
+        gestor.buscarID(3);
+        
+        gestor.eliminar(emp3);
+        
+        System.out.println("\nTodos los empleados: ");
         gestor.mostrar();
         
         
